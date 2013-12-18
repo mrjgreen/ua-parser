@@ -1,0 +1,17 @@
+{
+    "type": "library",
+    "description": "Fast php script to parse user agents",
+    "keywords": ["user agent", "ua-parser"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joe Green",
+            "email": "joe.green0991@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "UAParser": "lib"
+        }
+    }
+}
