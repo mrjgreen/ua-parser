@@ -119,7 +119,7 @@
     '(Snowshoe)/(\\d+)\\.(\\d+).(\\d+)' => 
     array (
     ),
-    '(Lightning)/(\\d+)\\.(\\d+)([ab]?\\d+[a-z]*)' => 
+    '(Lightning)/(\\d+)\\.(\\d+)\\.?((?:[ab]?\\d+[a-z]*)|(?:\\d*))' => 
     array (
     ),
     '(Firefox)/(\\d+)\\.(\\d+)\\.(\\d+(?:pre)?) \\(Swiftfox\\)' => 
@@ -213,6 +213,10 @@
     array (
       'family' => 'FacebookBot',
     ),
+    '(LinkedInBot)/(\\d+)\\.(\\d+)' => 
+    array (
+      'family' => 'LinkedInBot',
+    ),
     '(Twitterbot)/(\\d+)\\.(\\d+)' => 
     array (
       'family' => 'TwitterBot',
@@ -238,10 +242,32 @@
     '(AdobeAIR|FireWeb|Jasmine|ANTGalio|Midori|Fresco|Lobo|PaleMoon|Maxthon|Lynx|OmniWeb|Dillo|Camino|Demeter|Fluid|Fennec|Epiphany|Shiira|Sunrise|Flock|Netscape|Lunascape|WebPilot|Vodafone|NetFront|Netfront|Konqueror|SeaMonkey|Kazehakase|Vienna|Iceape|Iceweasel|IceWeasel|Iron|K-Meleon|Sleipnir|Galeon|GranParadiso|Opera Mini|iCab|NetNewsWire|ThunderBrowse|Iris|UP\\.Browser|Bunjalloo|Google Earth|Raven for Mac|Openwave)/(\\d+)\\.(\\d+)\\.(\\d+)' => 
     array (
     ),
+    'MSOffice 12' => 
+    array (
+      'family' => 'Outlook',
+      'major' => '2007',
+    ),
+    'MSOffice 14' => 
+    array (
+      'family' => 'Outlook',
+      'major' => '2010',
+    ),
+    'Microsoft Outlook 15\\.\\d+\\.\\d+' => 
+    array (
+      'family' => 'Outlook',
+      'major' => '2013',
+    ),
+    '(Airmail) (\\d+)\\.(\\d+)(?:\\.(\\d+))?' => 
+    array (
+    ),
+    '(Thunderbird)/(\\d+)\\.(\\d+)\\.(\\d+(?:pre)?)' => 
+    array (
+      'family' => 'Thunderbird',
+    ),
     '(Chromium|Chrome)/(\\d+)\\.(\\d+)\\.(\\d+)' => 
     array (
     ),
-    '(Bolt|Jasmine|IceCat|Skyfire|Midori|Maxthon|Lynx|Arora|IBrowse|Dillo|Camino|Shiira|Fennec|Phoenix|Chrome|Flock|Netscape|Lunascape|Epiphany|WebPilot|Opera Mini|Opera|Vodafone|NetFront|Netfront|Konqueror|Googlebot|SeaMonkey|Kazehakase|Vienna|Iceape|Iceweasel|IceWeasel|Iron|K-Meleon|Sleipnir|Galeon|GranParadiso|iCab|NetNewsWire|Space Bison|Stainless|Orca|Dolfin|BOLT|Minimo|Tizen Browser|Polaris|Abrowser|Planetweb|ICE Browser)/(\\d+)\\.(\\d+)' => 
+    '(bingbot|Bolt|Jasmine|IceCat|Skyfire|Midori|Maxthon|Lynx|Arora|IBrowse|Dillo|Camino|Shiira|Fennec|Phoenix|Chrome|Flock|Netscape|Lunascape|Epiphany|WebPilot|Opera Mini|Opera|Vodafone|NetFront|Netfront|Konqueror|Googlebot|SeaMonkey|Kazehakase|Vienna|Iceape|Iceweasel|IceWeasel|Iron|K-Meleon|Sleipnir|Galeon|GranParadiso|iCab|NetNewsWire|Space Bison|Stainless|Orca|Dolfin|BOLT|Minimo|Tizen Browser|Polaris|Abrowser|Planetweb|ICE Browser)/(\\d+)\\.(\\d+)' => 
     array (
     ),
     '(Chromium|Chrome)/(\\d+)\\.(\\d+)' => 
@@ -287,12 +313,6 @@
     '(MSIE) (\\d+)\\.(\\d+).*XBLWP7' => 
     array (
       'family' => 'IE Large Screen',
-    ),
-    '(Firefox)/(\\d+)\\.(\\d+)\\.(\\d+)' => 
-    array (
-    ),
-    '(Firefox)/(\\d+)\\.(\\d+)(pre|[ab]\\d+[a-z]*)?' => 
-    array (
     ),
     '(Obigo)InternetBrowser' => 
     array (
@@ -522,11 +542,21 @@
     array (
       'family' => 'Phantom Browser',
     ),
-    '([MS]?IE) (\\d+)\\.(\\d+)' => 
+    'Trident(.*)rv.(\\d+)\\.(\\d+)' => 
     array (
       'family' => 'IE',
     ),
-    'Trident(.*)rv.(\\d+)\\.(\\d+)' => 
+    '(AppleWebKit)/(\\d+)\\.(\\d+)\\.(\\d+)' => 
+    array (
+      'family' => 'AppleMail',
+    ),
+    '(Firefox)/(\\d+)\\.(\\d+)\\.(\\d+)' => 
+    array (
+    ),
+    '(Firefox)/(\\d+)\\.(\\d+)(pre|[ab]\\d+[a-z]*)?' => 
+    array (
+    ),
+    '([MS]?IE) (\\d+)\\.(\\d+)' => 
     array (
       'family' => 'IE',
     ),
@@ -897,6 +927,26 @@
     array (
       'device' => 'Kindle Fire HD 8.9" 4G',
     ),
+    '(KFSOWI Build)' => 
+    array (
+      'device' => 'Kindle Fire HD 7" WiFi',
+    ),
+    '(KFTHWI Build)' => 
+    array (
+      'device' => 'Kindle Fire HDX 7" WiFi',
+    ),
+    '(KFTHWA Build)' => 
+    array (
+      'device' => 'Kindle Fire HDX 7" 4G',
+    ),
+    '(KFAPWI Build)' => 
+    array (
+      'device' => 'Kindle Fire HDX 8.9" WiFi',
+    ),
+    '(KFAPWA Build)' => 
+    array (
+      'device' => 'Kindle Fire HDX 8.9" 4G',
+    ),
     '(Kindle Fire)' => 
     array (
     ),
@@ -1243,15 +1293,7 @@
     array (
       'device' => 'Generic Feature Phone',
     ),
-    'Windows' => 
-    array (
-      'device' => 'PC',
-    ),
-    'Mac' => 
-    array (
-      'device' => 'Mac',
-    ),
-    '(bot|borg|google(^tv)|yahoo|slurp|msnbot|msrbot|openbot|archiver|netresearch|lycos|scooter|altavista|teoma|gigabot|baiduspider|blitzbot|oegp|charlotte|furlbot|http%20client|polybot|htdig|ichiro|mogimogi|larbin|pompos|scrubby|searchsight|seekbot|semanticdiscovery|silk|snappy|speedy|spider|voila|vortex|voyager|zao|zeal|fast\\-webcrawler|converacrawler|dataparksearch|findlinks|crawler)' => 
+    '(bingbot|bot|borg|google(^tv)|yahoo|slurp|msnbot|msrbot|openbot|archiver|netresearch|lycos|scooter|altavista|teoma|gigabot|baiduspider|blitzbot|oegp|charlotte|furlbot|http%20client|polybot|htdig|ichiro|mogimogi|larbin|pompos|scrubby|searchsight|seekbot|semanticdiscovery|silk|snappy|speedy|spider|voila|vortex|voyager|zao|zeal|fast\\-webcrawler|converacrawler|dataparksearch|findlinks|crawler)' => 
     array (
       'device' => 'Spider',
     ),
