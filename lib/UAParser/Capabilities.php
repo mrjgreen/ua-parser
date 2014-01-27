@@ -4,9 +4,9 @@ class Capabilites{
     
     public $data;
     
-    public function __construct($data)
+    public function __construct($data = null)
     {
-        $this->data = $data;
+        $this->data = $data ?: include  __DIR__ . '/../../resources/capabilities.php';
     }
     
     public function parse($devicename)

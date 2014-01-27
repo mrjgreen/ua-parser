@@ -10,9 +10,9 @@ class Parser {
         'device'            => array('device', 'manufacturer'),
     );
     
-    public function __construct($data)
+    public function __construct($data = null)
     {
-        $this->data = $data;
+        $this->data = $data ?: include  __DIR__ . '/../../resources/regexes.php';
     }
  
     public function parse($useragent)

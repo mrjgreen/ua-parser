@@ -6,7 +6,7 @@ class Filter {
     
     public function __construct($data)
     {
-        $this->data = $data;
+        $this->data = $data ?: include  __DIR__ . '/../../resources/filters.php';
     }
     
     public function filter($useragent)
