@@ -27,6 +27,7 @@ class Capabilities{
                     }
 
                     isset($return['manufacturer']) or $return['manufacturer'] = $manufacturer;
+                    isset($return['device']) or $return['device'] = $devicename;
 
                     if(empty($data['cascade']))
                     {
