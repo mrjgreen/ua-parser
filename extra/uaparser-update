@@ -354,13 +354,11 @@ class DownloadUpdate extends Command {
         
         $interaction = !$this->getOption('nointeraction');
 
-        $mainRegexes = file_get_contents($this->getOption('source'));
-        
-        // Translate the nomenclature into the correct names for our parser
-        $str = strtr($mainRegexes, $this->translations);
-        
-        // The string is yaml so load it using the spyc package
-        $regexes = spyc_load($str);
+        if(!$regexes = $this->loadPatch($this->getOption('source')))
+        {
+            throw new \Exception('Regex file could not be loaded');
+        }
+
         
         // See if we have an additional file or directory to look through
         if($patchFile = $this->getOption('patch'))
@@ -430,7 +428,7 @@ class DownloadUpdate extends Command {
             return $arr;
         }
         
-        if(is_file($patchFile) && (substr($patchFile, -5) === '.yaml' || substr($patchFile, -4) === '.yml'))
+        if((substr($patchFile, 0, 4) === 'http' || is_file($patchFile)) && (substr($patchFile, -5) === '.yaml' || substr($patchFile, -4) === '.yml'))
         {
             $patch = file_get_contents($patchFile);
             
