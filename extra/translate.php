@@ -30,8 +30,26 @@ $str = str_replace(array(
     'patch_minor'
 ),file_get_contents(__DIR__ . '/../resources/regexes.yaml'));
  
+if(isset($_SERVER['argv'][1]))
+{
+    if(is_file($_SERVER['argv'][1]))
+    {
+        $str .= file_get_contents($_SERVER['argv'][1]);
+    }elseif(is_dir($_SERVER['argv'][1])) {
+        foreach(new IteratorIterator(new RecursiveDirectoryIterator($_SERVER['argv'][1])) as $file)
+        {
+            if(is_file($file) && substr($file, -5) === '.yaml')
+            {
+                $str .= file_get_contents($_SERVER['argv'][1]);
+            }
+        }
+    }else{
+        throw new \Exception('Path ' . $_SERVER['argv'][1] . ' is not a file or directory');
+    }
+}
+
 $regexes = spyc_load($str);
- 
+
 $final = array();
  
 foreach(array('user_agent','os','device') as $category){
@@ -42,6 +60,10 @@ foreach(array('user_agent','os','device') as $category){
         $final[$category][$key] = $regex;
     }
 }
-
-
 file_put_contents(__DIR__ . '/../resources/regexes.php','<?php return ' . var_export($final,1). ';');
+
+
+$manufacturers = spyc_load(file_get_contents(__DIR__ . '/../resources/manufacturer.yaml'));
+
+
+file_put_contents(__DIR__ . '/../resources/devices.php','<?php return ' . var_export($manufacturers,1). ';');
