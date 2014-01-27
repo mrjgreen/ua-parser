@@ -89,7 +89,7 @@ Philips:
 
 Samsung: 
   - regex: 'Samsung'
-  - regex: '^SGH-'
+  - regex: '^S.H-' # Starts with S followed by any char then H the hyphen - this is a network specific samsung phone
 
 Sega:
   - regex: 'Dreamcast'
