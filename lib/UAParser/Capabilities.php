@@ -1,6 +1,6 @@
 <?php namespace UAParser;
 
-class Capabilites{
+class Capabilities{
     
     public $data;
     
