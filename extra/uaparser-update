@@ -108,7 +108,7 @@ abstract class Command {
                     $this->fatal('Value for option "--' . $option[0] . ' (-' . $option[1] . ')" is required');
                 }
 
-                if ($set && strlen($value) > 0 && (($option[2] & self::VALUE_NONE) === self::VALUE_NONE))
+                if ($set && !is_bool($value) && strlen($value) > 0 && (($option[2] & self::VALUE_NONE) === self::VALUE_NONE))
                 {
                     $this->fatal('Cannot set a value for option "--' . $option[0] . ' (-' . $option[1] . ')"');
                 }
