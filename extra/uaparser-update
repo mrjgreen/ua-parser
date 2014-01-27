@@ -398,15 +398,17 @@ class DownloadUpdate extends Command {
     {
         if(is_file($out))
         {
-            if(!$interaction || $this->confirm('File ' . $out . ' exists. Would you like to overwrite it?'))
+            if($interaction && !$this->confirm('File ' . $out . ' exists. Would you like to overwrite it?'))
             {
-                file_put_contents($out,'<?php return ' . var_export($data, 1). ';');
-                
-                $this->success($out . ' has been updated');
-                
-                return true;
+                return false;
             }
         }
+        
+        file_put_contents($out,'<?php return ' . var_export($data, 1). ';');
+                
+        $this->success($out . ' has been updated');
+
+        return true;
     }
     
     public function loadPatch($patchFile)
