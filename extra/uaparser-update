@@ -434,8 +434,8 @@ class DownloadUpdate extends Command {
         return array(
             array('source','s', self::OPTIONAL, 'https://raw.github.com/tobie/ua-parser/master/regexes.yaml'),
             array('capabilities','c', self::OPTIONAL, 'https://raw.github.com/joegreen0991/ua-parser/master/resources/capabilities.yaml'),
-            array('output','o', self::OPTIONAL, __DIR__ . '/../resources/regexes.php'),
-            array('outputcapabilities','p', self::OPTIONAL, __DIR__ . '/../resources/capabilities.php'),
+            array('output','o', self::OPTIONAL, __DIR__ . '/../joegreen0991/ua-parser/resources/regexes.php'),
+            array('outputcapabilities','p', self::OPTIONAL, __DIR__ . '/../joegreen0991/ua-parser/resources/capabilities.php'),
             array('patch','p', self::OPTIONAL),
             array('nointeraction','y', self::VALUE_NONE),
         );
