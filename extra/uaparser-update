@@ -378,7 +378,9 @@ class DownloadUpdate extends Command {
             // The string is yaml so load it using the spyc package
             $patchRegexes = spyc_load($str);
             
-            $regexes = array_merge_recursive($regexes, $patchRegexes);
+            $regexes = array_merge_recursive($patchRegexes, $regexes);
+            
+            $this->info("Merged in patch file $patchFile");
         }
         
 
