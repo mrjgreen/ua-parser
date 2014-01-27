@@ -371,14 +371,8 @@ class DownloadUpdate extends Command {
             }
             
             $patch = $this->loadPatch($patchFile);
-            
-            // Translate the nomenclature into the correct names for our parser
-            $str = strtr($patch, $this->translations);
-            
-            // The string is yaml so load it using the spyc package
-            $patchRegexes = spyc_load($str);
-            
-            $regexes = array_merge_recursive($patchRegexes, $regexes);
+
+            $regexes = array_merge_recursive($patch, $regexes);
             
             $this->info("Merged in patch file $patchFile");
         }
@@ -426,19 +420,25 @@ class DownloadUpdate extends Command {
     {
         if(is_dir($patchFile))
         {
-            $str = array();
+            $arr = array();
             
             foreach(new IteratorIterator(new RecursiveDirectoryIterator($patchFile)) as $file)
             {
-                $str .= $this->loadPatch($file);
+                $arr = array_merge_recursive($this->loadPatch($file), $arr);
             }
             
-            return $str;
+            return $arr;
         }
         
-        if(is_file($patchFile) && substr($patchFile, -5) === '.yaml')
+        if(is_file($patchFile) && (substr($patchFile, -5) === '.yaml' || substr($patchFile, -4) === '.yml'))
         {
-            return file_get_contents($patchFile);
+            $patch = file_get_contents($patchFile);
+            
+            // Translate the nomenclature into the correct names for our parser
+            $str = strtr($patch, $this->translations);
+            
+            // The string is yaml so load it using the spyc package
+            return spyc_load($str);
         }
     }
 
