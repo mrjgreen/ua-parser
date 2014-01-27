@@ -28,9 +28,9 @@ HP:
   
 Apple:
   - regex: 'AppleTV'  
-  - regex: 'iPod'
-  - regex: 'iPad'
-  - regex: 'iPhone'
+  - regex: '^iPod'
+  - regex: '^iPad'
+  - regex: '^iPhone'
 
 Acer:
   - regex: 'Acer'
