@@ -356,6 +356,12 @@ class DownloadUpdate extends Command {
 
         $mainRegexes = file_get_contents($this->getOption('source'));
         
+        // Translate the nomenclature into the correct names for our parser
+        $str = strtr($mainRegexes, $this->translations);
+        
+        // The string is yaml so load it using the spyc package
+        $regexes = spyc_load($str);
+        
         // See if we have an additional file or directory to look through
         if($patchFile = $this->getOption('patch'))
         {
@@ -364,14 +370,17 @@ class DownloadUpdate extends Command {
                 throw new \Exception('Path ' . $patchFile . ' is not a file or directory');
             }
             
-            $mainRegexes = $this->loadPatch($patchFile) . $mainRegexes;
+            $patch = $this->loadPatch($patchFile);
+            
+            // Translate the nomenclature into the correct names for our parser
+            $str = strtr($patch, $this->translations);
+            
+            // The string is yaml so load it using the spyc package
+            $patchRegexes = spyc_load($str);
+            
+            $regexes = array_merge_recursive($regexes, $patchRegexes);
         }
         
-        // Translate the nomenclature into the correct names for our parser
-        $str = strtr($mainRegexes, $this->translations);
-        
-        // The string is yaml so load it using the spyc package
-        $regexes = spyc_load($str);
 
         $final = array();
 
