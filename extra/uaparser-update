@@ -364,7 +364,7 @@ class DownloadUpdate extends Command {
                 throw new \Exception('Path ' . $patchFile . ' is not a file or directory');
             }
             
-            $mainRegexes .= $this->loadPatch($patchFile);
+            $mainRegexes = $this->loadPatch($patchFile) . $mainRegexes;
         }
         
         // Translate the nomenclature into the correct names for our parser
