@@ -4,6 +4,7 @@
     "description": "Fast php script to parse user agents",
     "keywords": ["user agent", "ua-parser"],
     "license": "MIT",
+    "bin": ["extra/update.php"],
     "authors": [
         {
             "name": "Joe Green",
