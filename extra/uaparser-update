@@ -443,11 +443,11 @@ class DownloadUpdate extends Command {
     protected function getOptions()
     {
         return array(
-            array('source','s', self::OPTIONAL, 'https://raw.github.com/tobie/ua-parser/master/regexes.yaml'),
-            array('capabilities','c', self::OPTIONAL, 'https://raw.github.com/joegreen0991/ua-parser/master/resources/capabilities.yaml'),
-            array('output','o', self::OPTIONAL, __DIR__ . '/../resources/regexes.php'),
-            array('outputcapabilities','p', self::OPTIONAL, __DIR__ . '/../resources/capabilities.php'),
-            array('patch','p', self::OPTIONAL),
+            array('source','s', self::REQUIRED, 'https://raw.github.com/tobie/ua-parser/master/regexes.yaml'),
+            array('capabilities','c', self::REQUIRED, 'https://raw.github.com/joegreen0991/ua-parser/master/resources/capabilities.yaml'),
+            array('output','o', self::REQUIRED, __DIR__ . '/../resources/regexes.php'),
+            array('outputcapabilities','b', self::REQUIRED, __DIR__ . '/../resources/capabilities.php'),
+            array('patch','p', self::REQUIRED),
             array('nointeraction','y', self::VALUE_NONE),
         );
     }
