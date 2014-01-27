@@ -78,6 +78,7 @@ Microsoft:
 
 Motorola:
   - regex: 'Motorola'
+  - regex: 'Razr'
     
 Nintendo:
   - regex: 'Nintendo'
