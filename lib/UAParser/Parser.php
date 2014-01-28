@@ -15,19 +15,19 @@ class Parser {
         $this->data = $data ?: include  __DIR__ . '/../../resources/regexes.php';
     }
  
-    public function parse($useragent)
+    public function parse($useragent, $returnregex = false)
     {
         $results = array();
         
         foreach($this->formats as $type => $format) 
         {
-            $results[$type] = $this->regex($useragent, $type, $format);
+            $results[$type] = $this->regex($useragent, $type, $format, $returnregex);
         }
         
         return $results;
     }
     
-    public function regex($useragent, $type, $format)
+    public function regex($useragent, $type, $format, $returnregex = false)
     {
         $return = array();
         
@@ -44,6 +44,12 @@ class Parser {
                 {
                     // We don't want to overwrite our custom data with generic data, we just fill in the gaps
                     isset($return[$key]) or $return[$key] = isset($info[$i + 1]) ? $info[$i + 1] : null;
+                }
+                
+                if($returnregex)
+                {
+                    isset($return['regexes']) or $return['regexes'] = array();
+                    $return['regexes'][] = $regex;
                 }
                 
                 if(empty($data['cascade']))
