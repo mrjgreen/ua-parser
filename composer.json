@@ -7,10 +7,10 @@
     "bin": ["extra/uaparser-update","extra/uaparser-test"],
     "scripts": {
 		"post-install-cmd": [
-			"extra/uaparser-update"
+			"vendor/bin/uaparser-update"
 		],
 		"post-update-cmd": [
-			"extra/uaparser-update"
+			"vendor/bin/uaparser-update"
 		]
 	},
     "authors": [
