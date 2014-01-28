@@ -9,7 +9,7 @@ class Capabilities{
         $this->data = $data ?: include  __DIR__ . '/../../resources/capabilities.php';
     }
     
-    public function parse($devicename)
+    public function parse($devicename, $return_regex = false)
     {
         $return = array();
         
@@ -28,6 +28,12 @@ class Capabilities{
 
                     isset($return['manufacturer']) or $return['manufacturer'] = $manufacturer;
                     isset($return['device']) or $return['device'] = $devicename;
+                    
+                    if($returnregex)
+                    {
+                        isset($return['regexes']) or $return['regexes'] = array();
+                        $return['regexes'][] = $regex;
+                    }
 
                     if(empty($data['cascade']))
                     {
