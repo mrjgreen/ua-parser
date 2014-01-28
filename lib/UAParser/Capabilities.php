@@ -19,6 +19,12 @@ class Capabilities{
             {
                 if (preg_match('@' . $data['regex'] . '@i', $devicename, $info)) 
                 {   
+                    if($returnregex)
+                    {
+                        isset($return['regexes']) or $return['regexes'] = array();
+                        $return['regexes'][] = $data['regex'];
+                    }
+                    
                     unset($data['regex']);
                     
                     foreach($data as $key => $value) 
@@ -28,12 +34,6 @@ class Capabilities{
 
                     isset($return['manufacturer']) or $return['manufacturer'] = $manufacturer;
                     isset($return['device']) or $return['device'] = $devicename;
-                    
-                    if($returnregex)
-                    {
-                        isset($return['regexes']) or $return['regexes'] = array();
-                        $return['regexes'][] = $data['regex'];
-                    }
 
                     if(empty($data['cascade']))
                     {
