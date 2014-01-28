@@ -9,7 +9,7 @@ class Capabilities{
         $this->data = $data ?: include  __DIR__ . '/../../resources/capabilities.php';
     }
     
-    public function parse($devicename, $return_regex = false)
+    public function parse($devicename, $returnregex = false)
     {
         $return = array();
         
