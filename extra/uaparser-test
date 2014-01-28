@@ -9,7 +9,7 @@ set_error_handler(function ($level, $message, $file, $line, $context)
     }
 });
 
-include_once __DIR__ . '/../vendor/autoload.php';
+include_once 'vendor/autoload.php';
 
 abstract class Command {
         
