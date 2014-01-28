@@ -1,4 +1,7 @@
 <?php return array (
+    
+    //This is an example of how to create filters. This can be used to remove "Random" additions to users' ua string
+    
     // Filters are case insensitive by default add case_sensitive => true to the array to override
     'BMID/[A-Z0-9]{10}' => array (
         'replacement' => 'BMID/0000000000',
