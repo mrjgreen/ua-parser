@@ -347,9 +347,9 @@ class TestUAParser extends Command {
         
         $devices = new \UAParser\Capabilities($capabilities);
         
-        $details = $parser->parse($this->getArgument('useragent'));
+        $details = $parser->parse($this->getArgument('useragent'), true);
 
-        $details and $details['device'] = $devices->parse($details['device']['device']);
+        $details and $details['device'] = $devices->parse($details['device']['device'], true);
         
         $this->success(print_r($details,1));
 
