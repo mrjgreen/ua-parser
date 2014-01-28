@@ -1,4 +1,6 @@
 vendor
 .DS_Store
 composer.lock
-
+resources/regexes.yaml
+resources/capabilities.php
+resources/regexes.php
