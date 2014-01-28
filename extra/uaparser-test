@@ -9,6 +9,8 @@ set_error_handler(function ($level, $message, $file, $line, $context)
     }
 });
 
+include_once __DIR__ . '/../vendor/autoload.php';
+
 abstract class Command {
         
         const OPTIONAL = 0;
@@ -336,7 +338,7 @@ class TestUAParser extends Command {
      */
     public function fire()
     {
-
+        
         $regexes = include $this->getOption('source');
         
         $capabilities = include $this->getOption('capabilities');
