@@ -327,7 +327,6 @@ abstract class Command {
 }
 
 
-<?php
 class TestUAParser extends Command {
     
     /**
@@ -338,15 +337,15 @@ class TestUAParser extends Command {
     public function fire()
     {
 
-        $regexes = include $this->getOption('source'));
+        $regexes = include $this->getOption('source');
         
-        $capabilities = include $this->getOption('capabilities'));
+        $capabilities = include $this->getOption('capabilities');
         
-        $parser = new \UAParser\Parser();
+        $parser = new \UAParser\Parser($regexes);
         
-        $devices = new \UAParser\Capabilities();
+        $devices = new \UAParser\Capabilities($capabilities);
         
-        $details = $parser->parse($this->getArgument('useragent));
+        $details = $parser->parse($this->getArgument('useragent'));
 
         $details and $details['device'] = $devices->parse($details['device']['device']);
         
