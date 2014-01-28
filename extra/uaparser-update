@@ -420,7 +420,7 @@ class DownloadUpdate extends Command {
         {
             $arr = array();
             
-            foreach(new IteratorIterator(new RecursiveDirectoryIterator($patchFile)) as $file)
+            foreach(new IteratorIterator(new RecursiveDirectoryIterator($patchFile, RecursiveDirectoryIterator::SKIP_DOTS)) as $file)
             {
                 $arr = array_merge_recursive($this->loadPatch($file), $arr);
             }
