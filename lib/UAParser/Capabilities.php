@@ -32,7 +32,7 @@ class Capabilities{
                     if($returnregex)
                     {
                         isset($return['regexes']) or $return['regexes'] = array();
-                        $return['regexes'][] = $regex;
+                        $return['regexes'][] = $data['regex'];
                     }
 
                     if(empty($data['cascade']))
