@@ -53,7 +53,7 @@ class Parser {
             }
         }
         
-        return $return;
+        return $return ?: null;
     }
     
     function interpolate($message, array $context = array())
