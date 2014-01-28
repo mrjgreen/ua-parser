@@ -383,7 +383,7 @@ class DownloadUpdate extends Command {
             foreach($regexes[$category] as $regex) {
                 $key = $regex['regex'];
                 unset($regex['regex']);
-                $final[$category][$key] = $regex;
+                isset($final[$category][$key]) or $final[$category][$key] = $regex;
             }
         }
         
