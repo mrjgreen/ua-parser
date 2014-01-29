@@ -342,7 +342,7 @@ class DownloadUpdate extends Command {
         'v4_replacement' => 'patch_minor',
         'device_replacement' => 'device',
         'brand_replacement' => 'manufacturer',
-        'model_replacement' => 'model'
+        'model_replacement' => 'model',
         '@'              => '\@' // @ is the delimiter so needs to be escaped
     );
     
