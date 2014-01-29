@@ -392,10 +392,6 @@ class DownloadUpdate extends Command {
         
         $this->write($this->getOption('output'), $final, $interaction);
         
-        $capabilities = spyc_load(file_get_contents($this->getOption('capabilities')));
-        
-        $this->write($this->getOption('outputcapabilities'), $capabilities, $interaction);
-        
         $this->success('Complete');
 
     }
@@ -447,9 +443,7 @@ class DownloadUpdate extends Command {
     {
         return array(
             array('source','s', self::REQUIRED, 'https://raw.github.com/tobie/ua-parser/master/regexes.yaml'),
-            array('capabilities','c', self::REQUIRED, 'https://raw.github.com/joegreen0991/ua-parser/master/resources/capabilities.yaml'),
             array('output','o', self::REQUIRED, __DIR__ . '/../resources/regexes.php'),
-            array('outputcapabilities','b', self::REQUIRED, __DIR__ . '/../resources/capabilities.php'),
             array('patch','p', self::REQUIRED),
             array('nointeraction','y', self::VALUE_NONE),
         );
