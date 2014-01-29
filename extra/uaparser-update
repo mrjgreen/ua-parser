@@ -435,6 +435,8 @@ class DownloadUpdate extends Command {
             // Translate the nomenclature into the correct names for our parser
             $str = strtr($patch, $this->translations);
             
+            $str = str_replace('@','\@',$patch);
+            
             // The string is yaml so load it using the spyc package
             return spyc_load($str);
         }
