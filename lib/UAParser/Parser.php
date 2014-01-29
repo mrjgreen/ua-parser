@@ -33,8 +33,15 @@ class Parser {
         
         foreach ($this->data[$type] as $regex => $data) 
         {
-            if (preg_match('@' . $regex . '@', $useragent, $info)) 
+            $flag = isset($data['regex_flag']) ? $data['regex_flag'] : '';
+            
+            if (preg_match('@' . $regex . '@' . $flag, $useragent, $info)) 
             {  
+                if(isset($data['regex_flag']))
+                {
+                    unset($data['regex_flag']);
+                }
+                
                 foreach($data as $key => $value) 
                 {
                     $return[$key] = $this->interpolate($value, $info);
