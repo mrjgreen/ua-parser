@@ -7,7 +7,7 @@ class Parser {
     public $formats = array(
         'user_agent'        => array('family','major','minor','patch'),
         'os'                => array('family','major','minor','patch'),
-        'device'            => array('device', 'manufacturer'),
+        'device'            => array('device', 'manufacturer', 'model'),
     );
     
     public function __construct($data = null)
