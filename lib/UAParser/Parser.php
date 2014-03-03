@@ -28,34 +28,25 @@ class Parser {
     }
     
     private function regex($useragent, $type, $format, $returnregex = false)
-    {
-        $return = array();
-        
-        $matchedRegexes = array();
-        
+    {                
         foreach ($this->data[$type] as $regex => $data) 
         {
             $flag = $this->arrayGet($data, 'regex_flag');
             
             if (preg_match('@' . $regex . '@' . $flag, $useragent, $info)) 
             {       
-                foreach($format as $position => $key) 
-                {  
+                $return = array();
+                
+                foreach($format as $position => $key)
+                {
                     $return[$key] = isset($data[$key]) ? $this->interpolate($data[$key], $info) : $this->arrayGet($info, $position + 1);
                 }
 
-                $matchedRegexes[] = $regex;
-                
-                if(empty($data['cascade']))
-                {
-                    break;
-                }
+                $returnregex and $return['regex'] = $regex;
+
+                return $return ?: null;
             }
         }
-        
-        $return and $returnregex and $return['regexes'] = $matchedRegexes;
-
-        return $return ?: null;
     }
     
     private function arrayGet($array, $key, $default = null)

@@ -428,10 +428,10 @@ class TestUAParser extends Command {
             {
                 $this->getOption('verbose') and $this->warning('No Match: ' . $data['user_agent_string']);
                 $details[$type] = static::$default[$type];
-                $details[$type]['regexes'] = null;
+                $details[$type]['regex'] = null;
             }
             
-            $this->assert($data, $details[$type], $details[$type]['regexes']) or $countErrors++;
+            $this->assert($data, $details[$type], $details[$type]['regex']) or $countErrors++;
         }
         
         return array($total, $countErrors);
@@ -452,9 +452,7 @@ class TestUAParser extends Command {
             
             $this->line($agent);
             
-            $this->line('Matched:');
-            $this->line($this->formatArray($regex));
-            
+            $this->line('Matched: ' . $regex);            
             
             $this->info('Expected:');
             $this->info($this->formatArray($expected));
