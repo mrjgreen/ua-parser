@@ -2,11 +2,11 @@
 
 class Parser {
     
-    public $data;
+    private $data;
     
     public $formats = array(
-        'user_agent'        => array('family','major','minor','patch'),
-        'os'                => array('family','major','minor','patch'),
+        'user_agent'        => array('family', 'major', 'minor', 'patch'),
+        'os'                => array('family', 'major', 'minor', 'patch'),
         'device'            => array('device', 'manufacturer', 'model'),
     );
     
@@ -27,49 +27,43 @@ class Parser {
         return $results;
     }
     
-    public function regex($useragent, $type, $format, $returnregex = false)
+    private function regex($useragent, $type, $format, $returnregex = false)
     {
         $return = array();
         
+        $matchedRegexes = array();
+        
         foreach ($this->data[$type] as $regex => $data) 
         {
-            $flag = isset($data['regex_flag']) ? $data['regex_flag'] : '';
+            $flag = $this->arrayGet($data, 'regex_flag');
             
             if (preg_match('@' . $regex . '@' . $flag, $useragent, $info)) 
-            {  
-                if(isset($data['regex_flag']))
-                {
-                    unset($data['regex_flag']);
+            {       
+                foreach($format as $position => $key) 
+                {  
+                    $return[$key] = isset($data[$key]) ? $this->interpolate($data[$key], $info) : $this->arrayGet($info, $position + 1);
                 }
-                
-                foreach($data as $key => $value) 
-                {
-                    $return[$key] = $this->interpolate($value, $info);
-                }
-               
-                foreach($format as $i => $key) 
-                {
-                    // We don't want to overwrite our custom data with generic data, we just fill in the gaps
-                    isset($return[$key]) or $return[$key] = isset($info[$i + 1]) ? $info[$i + 1] : null;
-                }
-                
-                if($returnregex)
-                {
-                    isset($return['regexes']) or $return['regexes'] = array();
-                    $return['regexes'][] = $regex;
-                }
+
+                $matchedRegexes[] = $regex;
                 
                 if(empty($data['cascade']))
                 {
-                    return $return;
+                    break;
                 }
             }
         }
         
+        $return and $returnregex and $return['regexes'] = $matchedRegexes;
+
         return $return ?: null;
     }
     
-    function interpolate($message, array $context = array())
+    private function arrayGet($array, $key, $default = null)
+    {
+        return isset($array[$key]) ? $array[$key] : $default;
+    }
+    
+    private function interpolate($message, array $context = array())
     {
         $replace = array();
         
