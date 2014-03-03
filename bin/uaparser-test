@@ -262,6 +262,10 @@ abstract class Command {
                 $this->line($this->getColoredString($output,'green'));
         }
         
+        protected function warning($output){
+                $this->line($this->getColoredString($output,'yellow'));
+        }
+        
         protected function error($output){
                 $this->line($this->getColoredString($output,'white','red'));
         }
@@ -331,6 +335,34 @@ abstract class Command {
 
 class TestUAParser extends Command {
     
+    protected static $testFileRegexs = array(
+        'user_agent' => array('.*ua\.yml$'),
+        'os' => array('.*os\.yml$'),
+        'device' => array('.*device\.yml$')
+    );
+    
+    protected static $default = array
+    (
+        'user_agent' => array(
+            'family' => 'Other',
+            'major' => '',
+            'minor' => '',
+            'patch' => ''
+        ),
+        'os' => array(
+            'family' => 'Other',
+            'major' => '',
+            'minor' => '',
+            'patch' => ''
+        ),
+        'device' => array(
+            'device' => 'Other'
+        )
+    );
+
+        
+    protected $parser;
+    
     /**
      * Execute the console command.
      *
@@ -340,21 +372,104 @@ class TestUAParser extends Command {
     {
         
         $regexes = include $this->getOption('source');
+                
+        $this->parser = new \UAParser\Parser($regexes);
         
-        $capabilities = include $this->getOption('capabilities');
-        
-        $parser = new \UAParser\Parser($regexes);
-        
-        $details = $parser->parse($this->getArgument('useragent'), true);
-        
-        $this->success(print_r($details,1));
+        if($this->getArgument('useragent'))
+        {
+            $details = $this->parser->parse($this->getArgument('useragent'), true);
+            
+            $this->success(print_r($details,1));
+        }
+        else
+        {
+            include __DIR__ . '/../extra/spyc.php';
+            
+            $dirIt = new \RecursiveDirectoryIterator($this->getOption('tests'), \FilesystemIterator::SKIP_DOTS);
+            
+            foreach(new RecursiveIteratorIterator($dirIt) as $file)
+            {
+                if($file->isFile() && ($type = $this->matchesRegex($file)))
+                {
+                    $this->success($type . ' => ' . $file->getBasename());
+                    
+                    $errors = $this->runTests($file, $type);
+                    
+                    $errors ? $this->error($errors . ' errors for file ' . $file->getBasename()) : 
+                              $this->success('No errors for file ' . $file->getBasename());
+                }
+            }
+        }
 
+    }
+    
+    protected function runTests($file, $type)
+    {
+        $countErrors = 0;
+        
+        // The string is yaml so load it using the spyc package
+        $data = spyc_load(file_get_contents($file));
+
+        foreach($data['test_cases'] as $data)
+        {
+            $details = $this->parser->parse($data['user_agent_string'], true);
+
+            if($type === 'device')
+            {
+                $data['device'] = $data['family'];
+                unset($data['family']);
+            }
+            
+            if($details[$type] === null)
+            {
+                $this->warning('FOUND NULL: ' . $data['user_agent_string']);
+                $details[$type] = static::$default[$type];
+            }
+            
+            $this->assert($data, $details[$type]) or $countErrors++;
+        }
+        
+        return $countErrors;
+    }
+    
+    protected function assert($expected, $details)
+    {
+        $agent = $expected['user_agent_string'];
+        
+        $expected = array_diff_key($expected, array('user_agent_string' => 1, 'js_ua' => 1, 'patch_minor' => 1));
+        
+        $details = array_intersect_key($details, $expected);
+        
+        if($details != $expected)
+        {
+            $this->error($agent);
+            $this->info('Expected' . PHP_EOL. print_r($expected, 1));
+            $this->error('Got' . PHP_EOL. print_r($details, 1));
+            
+            return false;
+        }
+        
+        return true;
+    }
+    
+    protected function matchesRegex($filename)
+    {
+        foreach(static::$testFileRegexs as $type => $regexes)
+        {
+            foreach($regexes as $regex)
+            {
+                if(preg_match("@$regex@", $filename))
+                {
+                    return $type;
+                }
+            }
+        }
     }
     
     protected function getArguments()
     {
         return array(
-            array('useragent', self::REQUIRED),
+            array('useragent', self::OPTIONAL, 'Run against a single user agent. If left blank the test will be ran against all test found in the specified tests directory'),
         );
     }
 
@@ -362,7 +477,7 @@ class TestUAParser extends Command {
     {
         return array(
             array('source','s', self::REQUIRED, __DIR__ . '/../resources/regexes.php'),
-            array('capabilities','c', self::REQUIRED, __DIR__ . '/../resources/capabilities.php'),
+            array('tests','t', self::REQUIRED, __DIR__ . '/../tests'),
         );
     }
 

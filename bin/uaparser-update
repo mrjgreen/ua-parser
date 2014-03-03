@@ -356,7 +356,7 @@ class DownloadUpdate extends Command {
      */
     public function fire()
     {
-        include_once __DIR__ . '/spyc.php';
+        include_once __DIR__ . '/../extra/spyc.php';
         
         $interaction = !$this->getOption('nointeraction');
 
