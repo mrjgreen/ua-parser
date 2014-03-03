@@ -409,6 +409,8 @@ class DownloadUpdate extends Command {
             }
         }
         
+        is_dir(dirname($out)) or mkdir(dirname($out), 0777, true);
+        
         file_put_contents($out,'<?php return ' . var_export($data, 1). ';');
                 
         $this->success($out . ' has been updated');
