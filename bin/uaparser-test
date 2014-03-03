@@ -267,7 +267,7 @@ abstract class Command {
         }
         
         protected function error($output){
-                $this->line($this->getColoredString($output,'white','red'));
+                $this->line($this->getColoredString($output,'red'));
         }
         
         protected function fatal($output,$exitcode = 1){
@@ -379,7 +379,8 @@ class TestUAParser extends Command {
         {
             $details = $this->parser->parse($this->getArgument('useragent'), true);
             
-            $this->success(print_r($details,1));
+            $this->success('Matched:');
+            $this->success($this->formatArray($details));
         }
         else
         {
@@ -390,13 +391,13 @@ class TestUAParser extends Command {
             foreach(new RecursiveIteratorIterator($dirIt) as $file)
             {
                 if($file->isFile() && ($type = $this->matchesRegex($file)))
-                {
-                    $this->success($type . ' => ' . $file->getBasename());
+                {                    
+                    list($total, $errors) = $this->runTests($file, $type);
                     
-                    $errors = $this->runTests($file, $type);
+                    $line = 'Tested ' . $total . ' with '. $errors . ' errors for file ' . $file->getBasename();
                     
-                    $errors ? $this->error($errors . ' errors for file ' . $file->getBasename()) : 
-                              $this->success('No errors for file ' . $file->getBasename());
+                    $errors ? $this->error($line) : 
+                              $this->success($line);
                 }
             }
         }
@@ -405,10 +406,13 @@ class TestUAParser extends Command {
     
     protected function runTests($file, $type)
     {
+
         $countErrors = 0;
         
         // The string is yaml so load it using the spyc package
         $data = spyc_load(file_get_contents($file));
+        
+        $total = count($data['test_cases']);
 
         foreach($data['test_cases'] as $data)
         {
@@ -422,17 +426,18 @@ class TestUAParser extends Command {
             
             if($details[$type] === null)
             {
-                $this->warning('FOUND NULL: ' . $data['user_agent_string']);
+                $this->getOption('verbose') and $this->warning('No Match: ' . $data['user_agent_string']);
                 $details[$type] = static::$default[$type];
+                $details[$type]['regexes'] = null;
             }
             
-            $this->assert($data, $details[$type]) or $countErrors++;
+            $this->assert($data, $details[$type], $details[$type]['regexes']) or $countErrors++;
         }
         
-        return $countErrors;
+        return array($total, $countErrors);
     }
     
-    protected function assert($expected, $details)
+    protected function assert($expected, $details, $regex)
     {
         $agent = $expected['user_agent_string'];
         
@@ -442,16 +447,45 @@ class TestUAParser extends Command {
         
         if($details != $expected)
         {
-            $this->error($agent);
-            $this->info('Expected' . PHP_EOL. print_r($expected, 1));
-            $this->error('Got' . PHP_EOL. print_r($details, 1));
             
+            $this->line(PHP_EOL . PHP_EOL . '________________________________________');
+            
+            $this->line($agent);
+            
+            $this->line('Matched:');
+            $this->line($this->formatArray($regex));
+            
+            
+            $this->info('Expected:');
+            $this->info($this->formatArray($expected));
+            
+            $this->error('Got:');
+            $this->error($this->formatArray($details));
+                        
             return false;
         }
         
         return true;
     }
     
+    protected function formatArray($array, $indent = 1)
+    {
+        $string = '';
+        
+        foreach($array as $key => $value)
+        {
+            if(is_array($value))
+            {
+                $value = PHP_EOL . $this->formatArray($value, $indent + 1);
+            }
+            
+            $string .= str_repeat("\t",$indent) . '[' . $key . '] => ' . $value . PHP_EOL;
+        }
+        
+        return $string;
+    }
+
+
     protected function matchesRegex($filename)
     {
         foreach(static::$testFileRegexs as $type => $regexes)
