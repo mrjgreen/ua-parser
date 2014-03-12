@@ -23,6 +23,8 @@ class Translator {
     
     public static function translate($spycdata)
     {
+        include_once __DIR__ . '/../../extra/spyc.php';
+        
         // Translate the nomenclature into the correct names for our parser
         $str = strtr($spycdata, static::$translations);
 
@@ -35,6 +37,7 @@ class Translator {
         $final = array();
 
         foreach(array('user_agent','os','device') as $category){
+            if(!isset($arrayData[$category])) continue;
             $final[$category] = array();
             foreach($arrayData[$category] as $regex) {
                 $key = $regex['regex'];
