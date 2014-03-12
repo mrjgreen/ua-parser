@@ -357,6 +357,7 @@ class DownloadUpdate extends Command {
     public function fire()
     {
         include_once __DIR__ . '/../extra/spyc.php';
+        include_once __DIR__ . '/../lib/UAParser/Translator.php';
         
         $interaction = !$this->getOption('nointeraction');
 
@@ -381,19 +382,7 @@ class DownloadUpdate extends Command {
             $this->info("Merged in patch file $patchFile");
         }
         
-
-        $final = array();
-
-        foreach(array('user_agent','os','device') as $category){
-            $final[$category] = array();
-            foreach($regexes[$category] as $regex) {
-                $key = $regex['regex'];
-                unset($regex['regex']);
-                isset($final[$category][$key]) or $final[$category][$key] = $regex;
-            }
-        }
-        
-        $this->write($this->getOption('output'), $final, $interaction);
+        $this->write($this->getOption('output'), $regexes, $interaction);
         
         $this->success('Complete');
 
@@ -435,12 +424,9 @@ class DownloadUpdate extends Command {
         if((substr($patchFile, 0, 4) === 'http' || is_file($patchFile)) && (substr($patchFile, -5) === '.yaml' || substr($patchFile, -4) === '.yml'))
         {
             $patch = file_get_contents($patchFile);
-            
+
             // Translate the nomenclature into the correct names for our parser
-            $str = strtr($patch, $this->translations);
-            
-            // The string is yaml so load it using the spyc package
-            return spyc_load($str);
+            return UAParser\Translator::translate($patch);
         }
     }
 

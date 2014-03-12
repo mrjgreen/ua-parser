@@ -221,6 +221,10 @@
     array (
       'family' => 'TwitterBot',
     ),
+    'Google.*/\\+/web/snippet' => 
+    array (
+      'family' => 'GooglePlusBot',
+    ),
     '(Rackspace Monitoring)/(\\d+)\\.(\\d+)' => 
     array (
       'family' => 'RackspaceBot',
