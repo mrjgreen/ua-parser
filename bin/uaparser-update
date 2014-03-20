@@ -377,7 +377,7 @@ class DownloadUpdate extends Command {
             
             $patch = $this->loadPatch($patchFile);
 
-            $regexes = array_merge_recursive($patch, $regexes);
+            $regexes = array_replace_recursive($patch, $regexes);
             
             $this->info("Merged in patch file $patchFile");
         }
