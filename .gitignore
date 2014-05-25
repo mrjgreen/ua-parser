@@ -4,3 +4,4 @@ composer.lock
 resources/regexes.yaml
 resources/regexes.php
 tobie
+.idea
