@@ -45,7 +45,49 @@ class Translator {
                 isset($final[$category][$key]) or $final[$category][$key] = $regex;
             }
         }
+
+        foreach($final as $category => $data) {
+            $final[$category] = static::generateVariableRouteData($data);
+        }
         
         return $final;
+    }
+
+    private static function generateVariableRouteData($data)
+    {
+        $chunkSize = static::computeChunkSize(count($data));
+        $chunks = array_chunk($data, $chunkSize, true);
+        return array_map(function($chunk){
+            return static::processChunk($chunk);
+        }, $chunks);
+    }
+
+    const APPROX_CHUNK_SIZE = 10;
+
+    private static function computeChunkSize($count)
+    {
+        $numParts = max(1, round($count / self::APPROX_CHUNK_SIZE));
+        return ceil($count / $numParts);
+    }
+
+    private static function processChunk($regexToRoutesMap)
+    {
+        $routeMap = [];
+        $regexes = [];
+        $count = 0;
+        $tabs = '';
+        foreach ($regexToRoutesMap as $regex => $match) {
+
+            $count++;
+            $tabs .= "\t";
+
+            $regexes[] = '(?:(' . $regex . ')(?:.*)([\t]{' . $count . '}))';
+
+            $routeMap[$tabs] = $match;
+
+        }
+
+        $regex = '(?|' . implode('|', $regexes) . ')';
+        return ['regex' => $regex,'append' => $tabs,'routeMap' => $routeMap];
     }
 }

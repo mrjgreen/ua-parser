@@ -29,17 +29,22 @@ class Parser {
     
     private function regex($useragent, $type, $format, $returnregex = false)
     {                
-        foreach ($this->data[$type] as $regex => $data) 
+        foreach ($this->data[$type] as $regexData)
         {
-            $flag = $this->arrayGet($data, 'regex_flag');
-            
-            if (preg_match('@' . $regex . '@' . $flag, $useragent, $info)) 
-            {       
+            $regex = $regexData['regex'];
+            //$flag = $this->arrayGet($data, 'regex_flag');
+            $flag = '';
+            if (preg_match('@' . $regex . '@' . $flag, $useragent . $regexData['append'], $matches))
+            {
+                $data = $regexData['routeMap'][array_pop($matches)];
+
                 $return = array();
-                
+
+                array_shift($matches);
+
                 foreach($format as $position => $key)
                 {
-                    $return[$key] = isset($data[$key]) ? $this->interpolate($data[$key], $info) : $this->arrayGet($info, $position + 1);
+                    $return[$key] = isset($data[$key]) ? $this->interpolate($data[$key], $matches) : $this->arrayGet($matches, $position + 1);
                 }
 
                 $returnregex and $return['regex'] = $regex;
