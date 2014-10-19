@@ -1,5 +1,5 @@
 {
-    "name" : "joegreen0991/ua-parser",
+    "name" : "mrjgreen/ua-parser",
     "type": "library",
     "description": "Fast php script to parse user agents",
     "keywords": ["user agent", "ua-parser"],
