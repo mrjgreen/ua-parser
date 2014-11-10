@@ -4,15 +4,6 @@
     "description": "Fast php script to parse user agents",
     "keywords": ["user agent", "ua-parser"],
     "license": "MIT",
-    "bin": ["bin/uaparser-update","bin/uaparser-test"],
-    "scripts": {
-		"post-install-cmd": [
-			"bin/uaparser-update -y"
-		],
-		"post-update-cmd": [
-			"bin/uaparser-update -y"
-		]
-	},
     "authors": [
         {
             "name": "Joe Green",
@@ -28,5 +19,11 @@
             "UAParser\\": "lib/UaParser",
             "UAParser\\Tests\\": "tests/UaParser/Tests"
         }
+    },
+    "bin": ["bin/uaparser"],
+    "scripts": {
+        "post-dumpautoload-cmd": [
+            "bin/uaparser update"
+        ]
     }
 }
