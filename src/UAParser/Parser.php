@@ -62,12 +62,11 @@ class Parser {
     /**
      * @param $array
      * @param $key
-     * @param null $default
      * @return null
      */
-    private function arrayGet($array, $key, $default = null)
+    private function arrayGet($array, $key)
     {
-        return isset($array[$key]) ? $array[$key] : $default;
+        return isset($array[$key]) ? $array[$key] : null;
     }
 
     /**
