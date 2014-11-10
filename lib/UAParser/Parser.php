@@ -14,7 +14,12 @@ class Parser {
     {
         $this->data = $data ?: include  __DIR__ . '/../../resources/regexes.php';
     }
- 
+
+    /**
+     * @param $useragent
+     * @param bool $returnregex
+     * @return array
+     */
     public function parse($useragent, $returnregex = false)
     {
         $results = array();
@@ -26,17 +31,22 @@ class Parser {
         
         return $results;
     }
-    
+
+    /**
+     * @param $useragent
+     * @param $type
+     * @param $format
+     * @param bool $returnregex
+     * @return null
+     */
     private function regex($useragent, $type, $format, $returnregex = false)
     {                
         foreach ($this->data[$type] as $regex => $data) 
         {
-            $flag = $this->arrayGet($data, 'regex_flag');
-            
-            if (preg_match('@' . $regex . '@' . $flag, $useragent, $info)) 
-            {       
+            if (preg_match($regex, $useragent, $info))
+            {
                 $return = array();
-                
+
                 foreach($format as $position => $key)
                 {
                     $return[$key] = isset($data[$key]) ? $this->interpolate($data[$key], $info) : $this->arrayGet($info, $position + 1);
@@ -48,12 +58,23 @@ class Parser {
             }
         }
     }
-    
+
+    /**
+     * @param $array
+     * @param $key
+     * @param null $default
+     * @return null
+     */
     private function arrayGet($array, $key, $default = null)
     {
         return isset($array[$key]) ? $array[$key] : $default;
     }
-    
+
+    /**
+     * @param $message
+     * @param array $context
+     * @return string
+     */
     private function interpolate($message, array $context = array())
     {
         $replace = array();

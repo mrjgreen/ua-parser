@@ -19,9 +19,14 @@
             "email": "joe.green0991@gmail.com"
         }
     ],
+    "require" : {
+        "symfony/yaml" : "*",
+        "symfony/console" : "*"
+    },
     "autoload": {
-        "psr-0": {
-            "UAParser": "lib"
+        "psr-4": {
+            "UAParser\\": "lib/UaParser",
+            "UAParser\\Tests\\": "tests/UaParser/Tests"
         }
     }
 }

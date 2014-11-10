@@ -1,51 +1,101 @@
 <?php namespace UAParser;
 
-class Translator {
-    
-    public static $translations = array(
-        'user_agent_parsers' => 'user_agent',
-        'os_parsers' => 'os',
-        'device_parsers' => 'device',
-        'family_replacement' => 'family',
-        'os_replacement' => 'family',
-        'os_v1_replacement' => 'major',
-        'os_v2_replacement' => 'minor',
-        'os_v3_replacement' => 'patch',
-        'v1_replacement' => 'major',
-        'v2_replacement' => 'minor',
-        'v3_replacement' => 'patch',
-        'v4_replacement' => 'patch_minor',
-        'device_replacement' => 'device',
-        'brand_replacement' => 'manufacturer',
-        'model_replacement' => 'model',
-        '@'              => '\@' // @ is the delimiter so needs to be escaped
-    );
-    
-    public static function translate($spycdata)
-    {
-        include_once __DIR__ . '/../../extra/spyc.php';
-        
-        // Translate the nomenclature into the correct names for our parser
-        $str = strtr($spycdata, static::$translations);
+use Symfony\Component\Yaml\Yaml;
 
-        // The string is yaml so load it using the spyc package
-        return static::reindex(spyc_load($str));
+class Translator {
+
+    protected static $defaultDelimiter = '@';
+
+    protected static $defaultTranslations = array(
+        'user_agent_parsers'    => 'user_agent',
+        'os_parsers'            => 'os',
+        'device_parsers'        => 'device',
+        'family_replacement'    => 'family',
+        'os_replacement'        => 'family',
+        'os_v1_replacement'     => 'major',
+        'os_v2_replacement'     => 'minor',
+        'os_v3_replacement'     => 'patch',
+        'v1_replacement'        => 'major',
+        'v2_replacement'        => 'minor',
+        'v3_replacement'        => 'patch',
+        'v4_replacement'        => 'patch_minor',
+        'device_replacement'    => 'device',
+        'brand_replacement'     => 'manufacturer',
+        'model_replacement'     => 'model',
+    );
+
+    protected $delimiter;
+
+    protected $translations;
+
+    protected $yamlParser;
+
+    public function __construct()
+    {
+        $this->delimiter = self::$defaultDelimiter;
+
+        $this->translations = self::$defaultTranslations;
+
+        $this->yamlParser = new Yaml();
     }
-    
-    public static function reindex(array $arrayData)
+
+    /**
+     * @param $yamlRegexData
+     * @return array
+     */
+    public function translate($yamlRegexData)
+    {
+        $translations = $this->translations;
+
+        $translations[$this->delimiter] = '\\' . $this->delimiter;
+
+        // Translate the nomenclature into the correct names for our parser
+        $str = strtr($yamlRegexData, $translations);
+
+        $phpRegexData = $this->yamlParser->parse($str);
+
+        return $this->reindex($phpRegexData);
+    }
+
+    /**
+     * @param array $arrayData
+     * @return array
+     */
+    public function reindex(array $arrayData)
     {
         $final = array();
 
-        foreach(array('user_agent','os','device') as $category){
-            if(!isset($arrayData[$category])) continue;
-            $final[$category] = array();
-            foreach($arrayData[$category] as $regex) {
-                $key = $regex['regex'];
-                unset($regex['regex']);
-                isset($final[$category][$key]) or $final[$category][$key] = $regex;
+        foreach(array('user_agent', 'os', 'device') as $category)
+        {
+            if(isset($arrayData[$category]))
+            {
+                $final[$category] = $this->func($arrayData[$category]);
             }
         }
         
         return $final;
+    }
+
+    /**
+     * @param $categoryData
+     * @return array
+     */
+    protected function func($categoryData)
+    {
+        $data = array();
+
+        foreach($categoryData as $regex)
+        {
+            $flag = isset($regex['flag']) ? $regex['flag'] : '';
+
+            $key = $this->delimiter . $regex['regex'] . $this->delimiter . $flag;
+
+            if(!isset($data[$key]))
+            {
+                $data[$key] = array_diff_key($regex, array('regex' => 1, 'flag' => 1));
+            }
+        }
+
+        return $data;
     }
 }
