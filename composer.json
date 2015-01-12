@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "UAParser\\": "src/UaParser",
+            "UAParser\\": "src/UAParser",
             "UAParser\\Tests\\": "tests/UaParser/Tests"
         }
     },
