@@ -1,7 +1,4 @@
 vendor
-.DS_Store
 composer.lock
 resources/regexes.yaml
 resources/regexes.php
-tobie
-.idea

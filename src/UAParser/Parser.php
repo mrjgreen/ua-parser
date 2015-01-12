@@ -4,7 +4,7 @@ class Parser {
     
     private $data;
     
-    public $formats = array(
+    private $formats = array(
         'user_agent'        => array('family', 'major', 'minor', 'patch'),
         'os'                => array('family', 'major', 'minor', 'patch'),
         'device'            => array('device', 'brand', 'model'),
@@ -12,7 +12,7 @@ class Parser {
     
     public function __construct($data = null)
     {
-        $this->data = $data ?: include  __DIR__ . '/../../resources/regexes.php';
+        $this->data = $data ?: include  __DIR__ . '/../resources/regexes.php';
     }
 
     /**

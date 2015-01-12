@@ -1,8 +1,11 @@
 {
-    "name" : "mrjgreen/ua-parser",
+    "name": "mrjgreen/ua-parser",
     "type": "library",
     "description": "Fast php script to parse user agents",
-    "keywords": ["user agent", "ua-parser"],
+    "keywords": [
+        "user agent",
+        "ua-parser"
+    ],
     "license": "MIT",
     "authors": [
         {
@@ -10,20 +13,25 @@
             "email": "joe.green0991@gmail.com"
         }
     ],
-    "require" : {
-        "symfony/yaml" : "*",
-        "symfony/console" : "*"
+    "require": {
+        "symfony/yaml": "*",
+        "symfony/console": "*"
     },
     "autoload": {
         "psr-4": {
-            "UAParser\\": "lib/UaParser",
+            "UAParser\\": "src/UaParser",
             "UAParser\\Tests\\": "tests/UaParser/Tests"
         }
     },
-    "bin": ["bin/uaparser"],
+    "bin": [
+        "bin/uaparser"
+    ],
     "scripts": {
         "post-dumpautoload-cmd": [
             "bin/uaparser update"
         ]
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.4"
     }
 }
