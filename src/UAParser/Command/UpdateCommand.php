@@ -29,7 +29,7 @@ class UpdateCommand extends Command
 
         $this->defaultTarget = __DIR__ . '/../../resources/regexes.php';
 
-        $this->defaultSource = 'https://raw.github.com/tobie/ua-parser/master/regexes.yaml';
+        $this->defaultSource = 'https://raw.githubusercontent.com/ua-parser/uap-core/master/regexes.yaml';
 
         parent::__construct();
     }
