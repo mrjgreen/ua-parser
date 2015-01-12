@@ -27,7 +27,7 @@ class UpdateCommand extends Command
     {
         $this->translator = new Translator();
 
-        $this->defaultTarget = __DIR__ . '/../../resources/regexes.php';
+        $this->defaultTarget = __DIR__ . '/../../../resources/regexes.php';
 
         $this->defaultSource = 'https://raw.githubusercontent.com/ua-parser/uap-core/master/regexes.yaml';
 
