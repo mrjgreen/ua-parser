@@ -20,7 +20,7 @@ class UaParserTest extends TestCase
                 array(
                     '@somestring@' => array(
                         'device' => 'fizz',
-                        'manufacturer' => 'buzz',
+                        'brand' => 'buzz',
                         'model' => 3,
                     ),
                 ),
@@ -38,21 +38,21 @@ class UaParserTest extends TestCase
                 array(
                     'family' => 'foo',
                     'major' => 'bar',
-                    'minor' => 1,
-                    'patch' => 2
+                    'minor' => '1',
+                    'patch' => '2'
                 ),
             'device' =>
                 array(
                     'device' => 'fizz',
-                    'manufacturer' => 'buzz',
-                    'model' => 3,
+                    'brand' => 'buzz',
+                    'model' => '3',
                 ),
             'os' =>
                 array(
                     'family' => 'some',
                     'major' => 'ing',
-                    'minor' => 5,
-                    'patch' => 6
+                    'minor' => '5',
+                    'patch' => '6'
                 ),
         );
 

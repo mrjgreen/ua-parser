@@ -20,7 +20,7 @@ class Translator {
         'v3_replacement'        => 'patch',
         'v4_replacement'        => 'patch_minor',
         'device_replacement'    => 'device',
-        'brand_replacement'     => 'manufacturer',
+        'brand_replacement'     => 'brand',
         'model_replacement'     => 'model',
     );
 
