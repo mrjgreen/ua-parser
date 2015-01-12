@@ -3,14 +3,18 @@
 
 use Symfony\Component\Console\Application;
 
-$packageAutoloader = __DIR__ . '/../vendor/autoload.php';
+$packageAutoloaders = array(
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+    __DIR__ . '/../../autoload.php',
+);
 
-$standaloneAutoloader = __DIR__ . '/../../../autoload.php';
-
-if (file_exists($packageAutoloader)) {
-    require_once $packageAutoloader;
-} else {
-    require_once $standaloneAutoloader;
+foreach($packageAutoloaders as $autoloader)
+{
+    if(is_file($autoloader))
+    {
+        include $autoloader;
+    }
 }
 
 $application = new Application('ua-parser');
