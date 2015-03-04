@@ -46,7 +46,7 @@ class UpdateCommand extends Command
     }
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if(!$regexes = $this->loadPatch($input->getOption('source')))
+        if(!$regexes = $this->loadPatch($input->getOption('source'), $output))
         {
             throw new \Exception('Regex file could not be loaded');
         }
@@ -54,7 +54,7 @@ class UpdateCommand extends Command
         // See if we have an additional file or directory to look through
         if($patchFile = $input->getOption('patch'))
         {
-            $patch = $this->loadPatch($patchFile);
+            $patch = $this->loadPatch($patchFile, $output);
 
             $regexes = array_replace_recursive($patch, $regexes);
 
@@ -78,7 +78,7 @@ class UpdateCommand extends Command
         return true;
     }
 
-    public function loadPatch($patchFile)
+    public function loadPatch($patchFile, OutputInterface $output)
     {
         if(is_dir($patchFile))
         {
@@ -86,9 +86,9 @@ class UpdateCommand extends Command
 
             foreach(new \IteratorIterator(new \RecursiveDirectoryIterator($patchFile, \RecursiveDirectoryIterator::SKIP_DOTS)) as $file)
             {
-                if(preg_match('/\.(yml|yaml)/', $patchFile))
+                if(preg_match('/\.(yml|yaml)/', $file))
                 {
-                    $arr = array_merge_recursive($this->loadPatch($file), $arr);
+                    $arr = array_merge_recursive($this->loadPatch($file, $output), $arr);
                 }
             }
 
@@ -101,6 +101,8 @@ class UpdateCommand extends Command
         }
 
         $patch = file_get_contents($patchFile);
+        
+        $output->writeln("Loaded file: $patchFile");
 
         return $this->translator->translate($patch);
     }
