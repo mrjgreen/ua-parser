@@ -84,7 +84,7 @@ class UpdateCommand extends Command
         {
             $arr = array();
 
-            foreach(new \IteratorIterator(new \RecursiveDirectoryIterator($patchFile, \RecursiveDirectoryIterator::SKIP_DOTS)) as $file)
+            foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($patchFile, \RecursiveDirectoryIterator::SKIP_DOTS)) as $file)
             {
                 if(preg_match('/\.(yml|yaml)/', $file))
                 {
