@@ -15,11 +15,14 @@ class TestCommand extends Command
 
     protected function configure()
     {
+        $defaultRegexData = __DIR__ . '/../../resources/regexes.php';
+
         $this
             ->setName('test')
             ->setDescription('Runs the tests against the parser.')
             ->addArgument('uastring', InputArgument::OPTIONAL, 'A user agent string to test')
             ->addOption('tests', 't', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'The test files, or a folder containing the test data files in yaml format')
+            ->addOption('source', 's', InputOption::VALUE_REQUIRED, 'The regex source data', $defaultRegexData)
         ;
     }
 
@@ -27,7 +30,9 @@ class TestCommand extends Command
     {
         $this->yamlParser = new Yaml();
 
-        $this->parser = new Parser();
+        $regexes = include $input->getOption('source');
+
+        $this->parser = new Parser($regexes);
 
         if($ua = $input->getArgument('uastring'))
         {
@@ -44,6 +49,8 @@ class TestCommand extends Command
 
         $testTypes = array('os', 'device', 'user_agent');
 
+        $passes = 0;
+
         foreach($testFiles as $testFile)
         {
             $tests = $this->loadTestFile($testFile, $output);
@@ -54,13 +61,14 @@ class TestCommand extends Command
 
                 foreach($tests[$type] as $test)
                 {
-                    $this->runTest($test, $type);
+                    $passes+= $this->runTest($output, $test, $type);
                 }
             }
         }
+        $output->writeln('Tests Passed: ' .$passes);
     }
 
-    private function runTest($test, $type)
+    private function runTest(OutputInterface $output, $test, $type)
     {
         if(isset($test['js_ua'])) unset($test['js_ua']);
         if(isset($test['js_user_agent_v1'])) unset($test['js_user_agent_v1']);
@@ -74,12 +82,16 @@ class TestCommand extends Command
 
         if($diff)
         {
-            echo "Test failed: $ua\n";
-            echo "Expected:\n";
-            echo json_encode($test, JSON_PRETTY_PRINT);
-            echo "\nGot:\n";
-            echo json_encode($parsed[$type], JSON_PRETTY_PRINT);
-            echo "\n\n";
+            $output->writeln("Test failed: $ua");
+            $output->writeln("Expected:");
+            $output->writeln(json_encode($test, JSON_PRETTY_PRINT));
+            $output->writeln("Got:");
+            $output->writeln(json_encode($parsed[$type], JSON_PRETTY_PRINT));
+            $output->writeln("");
+            return false;
+        }else{
+            $output->writeln("Test passed: $ua");
+            return true;
         }
     }
 
