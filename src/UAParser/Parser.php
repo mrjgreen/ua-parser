@@ -76,13 +76,13 @@ class Parser {
      */
     private function interpolate($message, array $context = array())
     {
-        $replace = array();
-        
-        foreach ($context as $key => $val) 
+        $replace = array('$1' => '', '$2' => '', '$3' => '', '$4' => '');
+
+        foreach ($context as $key => $val)
         {
             $replace['$' . $key] = $val;
         }
         
-        return strtr($message, $replace);
+        return trim(strtr($message, $replace));
     }
 }
