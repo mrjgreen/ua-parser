@@ -10,7 +10,19 @@ use UAParser\Parser;
 
 class TestCommand extends Command
 {
+    /**
+     * @var Yaml
+     */
     private $yamlParser;
+
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+
+    /**
+     * @var Parser
+     */
     private $parser;
 
     protected function configure()
@@ -21,13 +33,15 @@ class TestCommand extends Command
             ->setName('test')
             ->setDescription('Runs the tests against the parser.')
             ->addArgument('uastring', InputArgument::OPTIONAL, 'A user agent string to test')
-            ->addOption('tests', 't', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'The test files, or a folder containing the test data files in yaml format')
             ->addOption('source', 's', InputOption::VALUE_REQUIRED, 'The regex source data', $defaultRegexData)
+            ->addOption('tests', 't', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'The test files, or a folder containing the test data files in yaml format')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->output = $output;
+
         $this->yamlParser = new Yaml();
 
         $regexes = include $input->getOption('source');
@@ -40,7 +54,7 @@ class TestCommand extends Command
 
             $output->writeln($ua);
 
-            $output->writeln(json_encode($string, JSON_PRETTY_PRINT));
+            $output->writeln($this->formatArray($string));
 
             return;
         }
@@ -49,7 +63,8 @@ class TestCommand extends Command
 
         $testTypes = array('os', 'device', 'user_agent');
 
-        $passes = 0;
+        $passed = 0;
+        $total = 0;
 
         foreach($testFiles as $testFile)
         {
@@ -61,38 +76,59 @@ class TestCommand extends Command
 
                 foreach($tests[$type] as $test)
                 {
-                    $passes+= $this->runTest($output, $test, $type);
+                    $total++;
+                    $passed += $this->runTest($test, $type);
                 }
             }
         }
-        $output->writeln('Tests Passed: ' .$passes);
+
+        $failed = $total - $passed;
+
+        $output->writeln("<info>Passed: $passed</info>");
+        $output->writeln("<error>Failed: $failed</error>");
     }
 
-    private function runTest(OutputInterface $output, $test, $type)
+    private function runTest($test, $type)
     {
-        if(isset($test['js_ua'])) unset($test['js_ua']);
-        if(isset($test['js_user_agent_v1'])) unset($test['js_user_agent_v1']);
+        $expected = array_diff_key($test, array('user_agent_string' => 1, 'js_ua' => 1, 'js_user_agent_v1' => 1));
 
-        $ua = $test['user_agent_string'];
-        unset($test['user_agent_string']);
+        $parsed = $this->parser->parse($test['user_agent_string']);
 
-        $parsed = $this->parser->parse($ua);
-
-        $diff = array_diff((array)$parsed[$type], $test);
-
-        if($diff)
+        if(array_diff($expected, (array)$parsed[$type]))
         {
-            $output->writeln("Test failed: $ua");
-            $output->writeln("Expected:");
-            $output->writeln(json_encode($test, JSON_PRETTY_PRINT));
-            $output->writeln("Got:");
-            $output->writeln(json_encode($parsed[$type], JSON_PRETTY_PRINT));
-            $output->writeln("");
+            $this->printError($test['user_agent_string'], $parsed[$type], $expected);
+
             return false;
-        }else{
-            $output->writeln("Test passed: $ua");
-            return true;
         }
+
+        if($this->output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE)
+        {
+            $this->printError($test['user_agent_string'], $parsed[$type], $expected, true);
+        }
+
+        return true;
+    }
+
+    private function printError($ua, $parsed, $expected, $passed = false)
+    {
+        $this->output->writeln($passed ? "Test passed: $ua" : "Test failed: $ua");
+        $this->output->writeln("Expected:");
+        $this->output->writeln($this->formatArray($expected));
+        $this->output->writeln("Got:");
+        $this->output->writeln($this->formatArray($parsed));
+        $this->output->writeln("");
+    }
+
+    protected function formatArray(array $array)
+    {
+        $string = '';
+
+        foreach($array as $key => $value)
+        {
+            $string .= $key . ' : ' . json_encode($value, JSON_PRETTY_PRINT) . PHP_EOL;
+        }
+
+        return $string;
     }
 
     private function loadTestFile($testFile, OutputInterface $output)
@@ -119,7 +155,10 @@ class TestCommand extends Command
 
         $tests = file_get_contents($testFile);
 
-        $output->writeln("Loaded file: $testFile");
+        if($this->output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE)
+        {
+            $output->writeln("Loaded file: $testFile");
+        }
 
         return $this->yamlParser->parse($tests);
     }
