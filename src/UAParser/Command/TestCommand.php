@@ -84,7 +84,7 @@ class TestCommand extends Command
 
         foreach($testFiles as $testFile)
         {
-            $tests = $this->loadTestFiles($testFile, $output);
+            $tests = $this->loadTestFiles(new SplFileInfo($testFile), $output);
 
             foreach($testTypes as $type)
             {

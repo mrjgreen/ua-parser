@@ -12,10 +12,10 @@ class FileLoader {
     }
 
     /**
-     * @param $patchFile
+     * @param \SplFileInfo $patchFile
      * @return array
      */
-    private function loadDirectory($patchFile)
+    private function loadDirectory(\SplFileInfo $patchFile)
     {
         $extensions = implode('|', $this->extensions);
 
@@ -37,7 +37,7 @@ class FileLoader {
      * @return string
      * @throws FileLoadException
      */
-    private function readFile($patchFile)
+    private function readFile(\SplFileInfo $patchFile)
     {
         $contents = @file_get_contents($patchFile);
 
@@ -53,9 +53,9 @@ class FileLoader {
      * @param $patchFile
      * @throws \Exception
      */
-    private function checkFileIsValid($patchFile)
+    private function checkFileIsValid(\SplFileInfo $patchFile)
     {
-        if(!preg_match('/^http(s)?:\/\//', $patchFile) && !is_file($patchFile))
+        if(!preg_match('/^http(s)?:\/\//', $patchFile) && !$patchFile->isFile())
         {
             throw new FileLoadException('Path ' . $patchFile . ' is not a file or directory');
         }
@@ -67,19 +67,21 @@ class FileLoader {
      * @return array
      * @throws \Exception
      */
-    private function loadInternal($patchFile, &$files = array())
+    private function loadInternal(\SplFileInfo $patchFile, &$files = array())
     {
-        if(is_dir($patchFile))
+        if($patchFile->isDir())
         {
             foreach($this->loadDirectory($patchFile) as $file)
             {
                 $this->loadInternal($file, $files);
             }
         }
+        else
+        {
+            $this->checkFileIsValid($patchFile);
 
-        $this->checkFileIsValid($patchFile);
-
-        $files[$patchFile] = $this->readFile($patchFile);
+            $files[$patchFile->getPathname()] = $this->readFile($patchFile);
+        }
 
         return $files;
     }
@@ -89,7 +91,7 @@ class FileLoader {
      * @return array
      * @throws \Exception
      */
-    public function load($patchFile)
+    public function load(\SplFileInfo $patchFile)
     {
         return $this->loadInternal($patchFile);
     }

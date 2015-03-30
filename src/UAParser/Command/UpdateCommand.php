@@ -62,7 +62,7 @@ class UpdateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if(!$regexes = $this->loadRegex($input->getOption('source'), $output))
+        if(!$regexes = $this->loadRegex(new \SplFileInfo($input->getOption('source')), $output))
         {
             return 1;
         }
@@ -70,7 +70,7 @@ class UpdateCommand extends Command
         // See if we have an additional file or directory to look through
         if($patchFile = $input->getOption('patch'))
         {
-            if(!$patches = $this->loadRegex($patchFile, $output))
+            if(!$patches = $this->loadRegex(new \SplFileInfo($patchFile), $output))
             {
                 return 2;
             }
@@ -104,12 +104,12 @@ class UpdateCommand extends Command
     }
 
     /**
-     * @param $patchFile
+     * @param \SplFileInfo $patchFile
      * @param OutputInterface $output
      * @return array
      * @throws \Exception
      */
-    public function loadRegex($patchFile, OutputInterface $output)
+    public function loadRegex(\SplFileInfo $patchFile, OutputInterface $output)
     {
         $arr = array();
 
