@@ -19,6 +19,5 @@ foreach($packageAutoloaders as $autoloader)
 
 $application = new Application('ua-parser');
 $application->add(new UpdateCommand());
-$application->add(new ParseCommand());
 $application->add(new TestCommand());
 $application->run();

@@ -4,6 +4,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use UAParser\FileLoader;
+use UAParser\FileLoadException;
 use UAParser\Translator;
 
 class UpdateCommand extends Command
@@ -12,6 +14,11 @@ class UpdateCommand extends Command
      * @var string
      */
     private $translator;
+
+    /**
+     * @var FileLoader
+     */
+    private $fileLoader;
 
     /**
      * @var string
@@ -26,6 +33,8 @@ class UpdateCommand extends Command
     public function __construct()
     {
         $this->translator = new Translator();
+
+        $this->fileLoader = new FileLoader();
 
         $this->defaultTarget = __DIR__ . '/../../../resources/regexes.php';
 
@@ -44,19 +53,29 @@ class UpdateCommand extends Command
             ->addOption('patch','p', InputOption::VALUE_REQUIRED, 'Include any yaml files in the given directory')
         ;
     }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if(!$regexes = $this->loadPatch($input->getOption('source'), $output))
+        if(!$regexes = $this->loadRegex($input->getOption('source'), $output))
         {
-            throw new \Exception('Regex file could not be loaded');
+            return 1;
         }
 
         // See if we have an additional file or directory to look through
         if($patchFile = $input->getOption('patch'))
         {
-            $patch = $this->loadPatch($patchFile, $output);
+            if(!$patches = $this->loadRegex($patchFile, $output))
+            {
+                return 2;
+            }
 
-            $regexes = array_replace_recursive($patch, $regexes);
+            $regexes = array_replace_recursive($patches, $regexes);
 
             $output->writeln("Merged in patch file $patchFile");
         }
@@ -67,8 +86,14 @@ class UpdateCommand extends Command
 
         $output->writeln('<info>Success: ' . $outputTarget . ' has been updated</info>');
 
+        return 0;
     }
 
+    /**
+     * @param $out
+     * @param $data
+     * @return bool
+     */
     public function write($out,$data)
     {
         is_dir(dirname($out)) or mkdir(dirname($out), 0777, true);
@@ -78,32 +103,41 @@ class UpdateCommand extends Command
         return true;
     }
 
-    public function loadPatch($patchFile, OutputInterface $output)
+    /**
+     * @param $patchFile
+     * @param OutputInterface $output
+     * @return array
+     * @throws \Exception
+     */
+    public function loadRegex($patchFile, OutputInterface $output)
     {
-        if(is_dir($patchFile))
+        $arr = array();
+
+        try
         {
-            $arr = array();
+            $files = $this->fileLoader->load($patchFile);
+        }
+        catch(FileLoadException $e)
+        {
+            $output->writeln('<error>Regex patch load failed with message '.$e->getMessage().'</error>');
 
-            foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($patchFile, \RecursiveDirectoryIterator::SKIP_DOTS)) as $file)
-            {
-                if(preg_match('/\.(yml|yaml)/', $file))
-                {
-                    $arr = array_merge_recursive($this->loadPatch($file, $output), $arr);
-                }
-            }
-
-            return $arr;
+            return false;
         }
 
-        if(!preg_match('/^http(s)?:\/\//', $patchFile) && !is_file($patchFile))
+        foreach($files as $filename => $content)
         {
-            throw new \Exception('Path ' . $patchFile . ' is not a file or directory');
+            $output->writeln("Loaded file: $filename");
+
+            $arr = array_merge_recursive($arr, $this->translator->translate($content));
         }
 
-        $patch = file_get_contents($patchFile);
-        
-        $output->writeln("Loaded file: $patchFile");
+        if(!$arr)
+        {
+            $output->writeln("<error>No regexes were found</error>");
 
-        return $this->translator->translate($patch);
+            return false;
+        }
+
+        return $arr;
     }
 }

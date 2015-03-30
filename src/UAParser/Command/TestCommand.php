@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
+use UAParser\FileLoader;
 use UAParser\Parser;
 
 class TestCommand extends Command
@@ -27,7 +28,7 @@ class TestCommand extends Command
 
     protected function configure()
     {
-        $defaultRegexData = __DIR__ . '/../../resources/regexes.php';
+        $defaultRegexData = __DIR__ . '/../../../resources/regexes.php';
 
         $this
             ->setName('test')
@@ -50,17 +51,32 @@ class TestCommand extends Command
 
         if($ua = $input->getArgument('uastring'))
         {
-            $string = $this->parser->parse($ua, true);
+            $parsed = $this->parser->parse($ua, true);
 
             $output->writeln($ua);
 
-            $output->writeln($this->formatArray($string));
-
-            return;
+            $output->writeln($this->formatArray($parsed));
         }
+        else
+        {
+            $tests = $input->getOption('tests');
 
-        $testFiles = $input->getOption('tests');
+            if(!$tests)
+            {
+                $output->writeln('<error>No test files. Specify a agent string as an argument or use --tests (-t) to specify test file locations</error>');
+                return 1;
+            }
 
+            $this->runAllTests($tests, $output);
+        }
+    }
+
+    /**
+     * @param array $testFiles
+     * @param OutputInterface $output
+     */
+    private function runAllTests(array $testFiles, OutputInterface $output)
+    {
         $testTypes = array('os', 'device', 'user_agent');
 
         $passed = 0;
@@ -68,7 +84,7 @@ class TestCommand extends Command
 
         foreach($testFiles as $testFile)
         {
-            $tests = $this->loadTestFile($testFile, $output);
+            $tests = $this->loadTestFiles($testFile, $output);
 
             foreach($testTypes as $type)
             {
@@ -88,6 +104,11 @@ class TestCommand extends Command
         $output->writeln("<error>Failed: $failed</error>");
     }
 
+    /**
+     * @param $test
+     * @param $type
+     * @return bool
+     */
     private function runTest($test, $type)
     {
         $expected = array_diff_key($test, array('user_agent_string' => 1, 'js_ua' => 1, 'js_user_agent_v1' => 1));
@@ -109,6 +130,12 @@ class TestCommand extends Command
         return true;
     }
 
+    /**
+     * @param $ua
+     * @param $parsed
+     * @param $expected
+     * @param bool $passed
+     */
     private function printError($ua, $parsed, $expected, $passed = false)
     {
         $this->output->writeln($passed ? "Test passed: $ua" : "Test failed: $ua");
@@ -119,7 +146,11 @@ class TestCommand extends Command
         $this->output->writeln("");
     }
 
-    protected function formatArray(array $array)
+    /**
+     * @param array $array
+     * @return string
+     */
+    private function formatArray(array $array)
     {
         $string = '';
 
@@ -131,35 +162,27 @@ class TestCommand extends Command
         return $string;
     }
 
-    private function loadTestFile($testFile, OutputInterface $output)
+    /**
+     * @param $testFile
+     * @param OutputInterface $output
+     * @return array
+     */
+    private function loadTestFiles($testFile, OutputInterface $output)
     {
-        if(is_dir($testFile))
-        {
-            $arr = array();
+        $loader = new FileLoader();
 
-            foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($testFile, \RecursiveDirectoryIterator::SKIP_DOTS)) as $file)
+        $arr = array();
+
+        foreach($loader->load($testFile) as $file => $content)
+        {
+            if($this->output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE)
             {
-                if(preg_match('/\.(yml|yaml)/', $file))
-                {
-                    $arr = array_merge_recursive($this->loadTestFile($file, $output), $arr);
-                }
+                $output->writeln("Loaded file: $file");
             }
 
-            return $arr;
+            $arr = array_merge_recursive($this->yamlParser->parse($file), $arr);
         }
 
-        if(!preg_match('/^http(s)?:\/\//', $testFile) && !is_file($testFile))
-        {
-            throw new \Exception('Path ' . $testFile . ' is not a file or directory');
-        }
-
-        $tests = file_get_contents($testFile);
-
-        if($this->output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE)
-        {
-            $output->writeln("Loaded file: $testFile");
-        }
-
-        return $this->yamlParser->parse($tests);
+        return $arr;
     }
 }
