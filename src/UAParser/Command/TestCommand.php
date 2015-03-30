@@ -175,7 +175,7 @@ class TestCommand extends Command
 
         foreach($loader->load($testFile) as $file => $content)
         {
-            if($this->output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE)
+            if($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE)
             {
                 $output->writeln("Loaded file: $file");
             }
