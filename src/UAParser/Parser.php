@@ -12,7 +12,7 @@ class Parser {
     
     public function __construct($data = null)
     {
-        $this->data = $data ?: include  __DIR__ . '/../resources/regexes.php';
+        $this->data = $data ?: include  __DIR__ . '/../../resources/regexes.php';
     }
 
     /**

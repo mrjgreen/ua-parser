@@ -23,7 +23,7 @@ class UaParserIntegrationTest extends TestCase
             ),
             "device" => array(
                 "device"    => "iPhone",
-                "brand"     => null,
+                "brand"     => "Apple",
                 "model"     => "iPhone",
             )
         );
