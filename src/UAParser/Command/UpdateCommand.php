@@ -75,7 +75,7 @@ class UpdateCommand extends Command
                 return 2;
             }
 
-            $regexes = array_replace_recursive($patches, $regexes);
+            $regexes = $this->patchOrPrepend($regexes, $patches);
 
             $output->writeln("Merged in patch file $patchFile");
         }
@@ -94,13 +94,19 @@ class UpdateCommand extends Command
      * @param $data
      * @return bool
      */
-    public function write($out,$data)
+    private function write($out,$data)
     {
         is_dir(dirname($out)) or mkdir(dirname($out), 0777, true);
 
         file_put_contents($out,'<?php return ' . var_export($data, 1). ';');
 
         return true;
+    }
+    
+    private function patchOrPrepend($main, $patch)
+    {
+        // Add the non existent patches to the front of the main array and then overwrite existing ones
+        return array_replace_recursive(array_replace_recursive($patch, $main), $patch);
     }
 
     /**
@@ -109,7 +115,7 @@ class UpdateCommand extends Command
      * @return array
      * @throws \Exception
      */
-    public function loadRegex(\SplFileInfo $patchFile, OutputInterface $output)
+    private function loadRegex(\SplFileInfo $patchFile, OutputInterface $output)
     {
         $arr = array();
 
