@@ -40,16 +40,23 @@ class Parser {
      * @return null
      */
     private function regex($useragent, $type, $format, $returnregex = false)
-    {                
+    {
         foreach ($this->data[$type] as $regex => $data) 
         {
             if (preg_match($regex, $useragent, $info))
             {
                 $return = array();
 
+                // Set the defaults
                 foreach($format as $position => $key)
                 {
-                    $return[$key] = isset($data[$key]) ? $this->interpolate($data[$key], $info) : $this->arrayGet($info, $position + 1);
+                    $return[$key] = $this->arrayGet($info, $position + 1);
+                }
+
+                // Overwrite defaults with specified/custom attributes
+                foreach($data as $key => $value)
+                {
+                    $return[$key] = $this->interpolate($data[$key], $info);
                 }
 
                 $returnregex and $return['regex'] = $regex;

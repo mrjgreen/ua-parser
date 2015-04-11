@@ -9,11 +9,12 @@ class UaParserTest extends TestCase
         $regexData = array(
             'user_agent' =>
                 array(
-                    '@somestring@' => array(
+                    '@som(est)r(in)g@' => array(
                         'family' => 'foo',
-                        'major' => 'bar',
+                        'major' => 'bar $2',
                         'minor' => 1,
-                        'patch' => 2
+                        'patch' => 2,
+                        'custom' => 'fizz $1'
                     ),
                 ),
             'device' =>
@@ -37,9 +38,10 @@ class UaParserTest extends TestCase
             'user_agent' =>
                 array(
                     'family' => 'foo',
-                    'major' => 'bar',
+                    'major' => 'bar in',
                     'minor' => '1',
-                    'patch' => '2'
+                    'patch' => '2',
+                    'custom' => 'fizz est'
                 ),
             'device' =>
                 array(
