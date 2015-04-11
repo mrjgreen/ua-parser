@@ -86,13 +86,13 @@ class Translator {
 
         foreach($categoryData as $regex)
         {
-            $flag = isset($regex['flag']) ? $regex['flag'] : '';
+            $flag = isset($regex['regex_flag']) ? $regex['regex_flag'] : '';
 
             $key = $this->delimiter . $regex['regex'] . $this->delimiter . $flag;
 
             if(!isset($data[$key]))
             {
-                $data[$key] = array_diff_key($regex, array('regex' => 1, 'flag' => 1));
+                $data[$key] = array_diff_key($regex, array('regex' => 1, 'regex_flag' => 1));
             }
         }
 
