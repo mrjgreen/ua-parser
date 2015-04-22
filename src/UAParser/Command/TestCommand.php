@@ -67,7 +67,7 @@ class TestCommand extends Command
                 return 1;
             }
 
-            $this->runAllTests($tests, $output);
+            return $this->runAllTests($tests, $output) ? 0 : 1;
         }
     }
 
@@ -102,6 +102,8 @@ class TestCommand extends Command
 
         $output->writeln("<info>Passed: $passed</info>");
         $output->writeln("<error>Failed: $failed</error>");
+        
+        return count($failed) === 0;
     }
 
     /**
@@ -124,28 +126,6 @@ class TestCommand extends Command
             }
         }
 
-        return false;
-    }
-    
-    /**
-     * @param $input
-     * @param $output
-     */
-    private function diff(array $input, array $output)
-    {
-        if(count($input) !== count($output))
-        {
-            return true;
-        }
-
-        foreach($input as $key => $value)
-        {
-            if(!isset($output[$key]) || $output[$key] !== $value)
-            {
-                return true;
-            }
-        }
-        
         return false;
     }
 
