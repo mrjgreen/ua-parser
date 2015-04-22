@@ -105,20 +105,20 @@ class TestCommand extends Command
     }
 
     /**
-     * @param array $input
-     * @param array $output
+     * @param array $expected
+     * @param array $parsed
      * @return bool
      */
-    private function diff(array $input, array $output)
+    private function diff(array $expected, array $parsed)
     {
-        if(count($input) !== count($output))
+        if(count($expected) !== count($parsed))
         {
             return true;
         }
 
-        foreach($input as $key => $value)
+        foreach($expected as $key => $value)
         {
-            if(!isset($output[$key]) || $output[$key] !== $value)
+            if((isset($value) && !isset($parsed[$key])) || $parsed[$key] !== $value)
             {
                 return true;
             }
