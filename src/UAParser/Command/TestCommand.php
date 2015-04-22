@@ -105,29 +105,48 @@ class TestCommand extends Command
     }
 
     /**
-     * @param $test
-     * @param $type
+     * @param array $input
+     * @param array $output
      * @return bool
      */
-    private function runTest($test, $type)
+    private function diff(array $input, array $output)
     {
-        $expected = array_diff_key($test, array('user_agent_string' => 1, 'js_ua' => 1, 'js_user_agent_v1' => 1));
-
-        $parsed = $this->parser->parse($test['user_agent_string']);
-
-        if(array_diff($expected, (array)$parsed[$type]))
+        if(count($input) !== count($output))
         {
-            $this->printError($test['user_agent_string'], $parsed[$type], $expected);
-
-            return false;
+            return true;
         }
 
-        if($this->output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE)
+        foreach($input as $key => $value)
         {
-            $this->printError($test['user_agent_string'], $parsed[$type], $expected, true);
+            if(!isset($output[$key]) || $output[$key] !== $value)
+            {
+                return true;
+            }
         }
 
-        return true;
+        return false;
+    }
+    
+    /**
+     * @param $input
+     * @param $output
+     */
+    private function diff(array $input, array $output)
+    {
+        if(count($input) !== count($output))
+        {
+            return true;
+        }
+
+        foreach($input as $key => $value)
+        {
+            if(!isset($output[$key]) || $output[$key] !== $value)
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     /**
