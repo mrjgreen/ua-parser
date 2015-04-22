@@ -74,6 +74,7 @@ class TestCommand extends Command
     /**
      * @param array $testFiles
      * @param OutputInterface $output
+     * @return bool
      */
     private function runAllTests(array $testFiles, OutputInterface $output)
     {
@@ -102,8 +103,34 @@ class TestCommand extends Command
 
         $output->writeln("<info>Passed: $passed</info>");
         $output->writeln("<error>Failed: $failed</error>");
-        
-        return count($failed) === 0;
+
+        return $failed == 0;
+    }
+
+    /**
+     * @param $test
+     * @param $type
+     * @return bool
+     */
+    private function runTest($test, $type)
+    {
+        $expected = array_diff_key($test, array('user_agent_string' => 1, 'js_ua' => 1, 'js_user_agent_v1' => 1));
+
+        $parsed = $this->parser->parse($test['user_agent_string']);
+
+        if($this->diff($expected, (array)$parsed[$type]))
+        {
+            $this->printError($test['user_agent_string'], $parsed[$type], $expected);
+
+            return false;
+        }
+
+        if($this->output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE)
+        {
+            $this->printError($test['user_agent_string'], $parsed[$type], $expected, true);
+        }
+
+        return true;
     }
 
     /**
