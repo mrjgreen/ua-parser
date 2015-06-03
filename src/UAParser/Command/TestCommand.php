@@ -206,7 +206,7 @@ class TestCommand extends Command
                 $output->writeln("Loaded file: $file");
             }
 
-            $arr = array_merge_recursive($this->yamlParser->parse($file), $arr);
+            $arr = array_merge_recursive($this->yamlParser->parse(file_get_contents($file)), $arr);
         }
 
         return $arr;
