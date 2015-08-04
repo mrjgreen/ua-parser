@@ -105,8 +105,21 @@ class UpdateCommand extends Command
     
     private function patchOrPrepend($main, $patch)
     {
-        // Add the non existent patches to the front of the main array and then overwrite existing ones
-        return array_replace_recursive(array_replace_recursive($patch, $main), $patch);
+        foreach($patch as $type => $patches)
+        {
+            foreach($patches as $ua => $values)
+            {
+                if(isset($main[$type][$ua]))
+                {
+                    $main[$type][$ua] = array_replace_recursive($main[$type][$ua], $values);
+
+                    unset($patch[$type][$ua]);
+                }
+            }
+        }
+
+        // Add the non existent patches to the front of the main array
+        return array_replace_recursive($patch, $main);
     }
 
     /**
